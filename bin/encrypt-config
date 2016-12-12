@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+"use strict";
+var path = require('path');
+var fs = require('fs');
+var zxcvbn = require("zxcvbn");
+var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+
+var argv = require('yargs').argv;
+
+var decr = "config.json",
+    encr = decr + ".enc",
+    pw = "config.password";
+var encr_display, decr_display, pw_display;
+
+if (argv.password_file) {
+    pw = pw_display = argv.password_file;
+} else {
+    pw_display = pw + " (default)";
+}
+if (!fs.existsSync(pw)) {
+    pw_display += " (created)";
+    var generator = require('generate-password');
+    var created_pass, loopcount = 0;
+    while (true) {
+        loopcount += 1;
+        if (loopcount > 20) {
+            throw new Error("Couldn't generate a strong enough password");
+        }
+        created_pass = generator.generate({
+            length: 50,
+            numbers: true,
+            symbols: true,
+            uppercase: true,
+            strict: true
+        });
+        if (zxcvbn(created_pass).score == 4) { break; }
+    }
+    fs.writeFileSync(pw, created_pass, {encoding: "utf-8"});
+}
+if (argv.config) {
+    decr = decr_display = argv.config;
+} else {
+    decr_display = decr + " (default)";
+}
+if (argv.encrypted_config) {
+    encr = encr_display = argv.encrypted_config
+} else {
+    encr = decr + ".enc";
+    encr_display = encr + " (default)";
+}
+
+console.log("   Encrypting:", decr_display);
+console.log("           To:", encr_display);
+console.log("With password:", pw_display);
+console.log("");
+
+var ec = require(lib+'/encrypt-config');
+
+ec.encrypt(decr, encr, pw, function(err) {
+    if (err) {
+        console.error(err.message);
+        return;
+    }
+    console.log("Done. You can now commit", encr, "to source control.");
+    console.log("(Ensure that", decr, "and", pw, "are not committed!)");
+});

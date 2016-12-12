@@ -1,0 +1,23 @@
+{
+  "name": "encrypt-config",
+  "version": "1.0.0",
+  "description": "Tools to store your Node app's config in a JSON file which is encrypted and then stored in your source control",
+  "main": "./lib/encrypt-config",
+  "scripts": {
+    "test": "tap --cov test/*.js"
+  },
+  "bin": {
+    "encrypt-config": "./bin/encrypt-config"
+  },
+  "author": "Stuart Langridge <sil@kryogenix.org>",
+  "license": "ISC",
+  "dependencies": {
+    "generate-password": "^1.2.0",
+    "yargs": "^6.5.0",
+    "zxcvbn": "^4.4.1"
+  },
+  "devDependencies": {
+    "mock-fs": "^3.12.1",
+    "tap": "^8.0.1"
+  }
+}
