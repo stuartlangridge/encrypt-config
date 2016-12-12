@@ -13,6 +13,7 @@ Create a JSON config file `config.json`:
         "grobbelaar": 1
     }
 }
+```
 
 `encrypt-config` will read `config.json` and create `config.json.enc`. This `config.json.enc` file can then be added to source control.
 
